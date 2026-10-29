@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    container_name: memo-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # SECRET_KEY 必须与前后端一致；生产请替换为随机值
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      # 模型密钥从宿主机 .env / 环境变量注入，不写入镜像与仓库
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-flash}
+      DATABASE_URL: sqlite:////data/memo.db
+    volumes:
+      - memo-data:/data
+    networks:
+      - memo-network
+
+volumes:
+  memo-data:
+
+networks:
+  memo-network:
+    external: true
