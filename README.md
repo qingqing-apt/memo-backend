@@ -97,6 +97,9 @@ docker compose up -d --build
   - 工具只读取**后端从 JWT 解析出的已验证 user_id**（通过 ContextVar 注入），工具签名不暴露 user_id，模型与浏览器都无法指定用户
   - 仅只读，无新增 / 修改 / 删除工具
   - 会话状态按用户隔离（`authorization_scope_resolver` 返回 `user:<id>` 作为 scope）
+- **会话行为**：
+  - 对话上下文由 AG-UI 的 `threadId` 关联，同一 `threadId` 的多轮对话在进程内有效
+  - 历史保存在**内存快照**（`InMemoryAGUIThreadSnapshotStore`），**服务重启后清空**；今天不要求数据库持久化
 
 ### 实际安装版本
 
