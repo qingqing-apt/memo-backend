@@ -40,8 +40,20 @@ AGENT_INSTRUCTIONS = """你是「备忘录助手」，帮助用户查询他自�
 def build_model_client():
     """按服务端环境变量选择模型 client（密钥只保留在服务端）。
 
-    优先级：Ollama（本地免费）> OpenAI > Azure OpenAI；都未配置时回退到本地 Ollama。
+    优先级：DeepSeek（用户指定）> Ollama（本地免费）> OpenAI > Azure OpenAI；
+    都未配置时回退到本地 Ollama。
     """
+    # DeepSeek（OpenAI 兼容接口，base_url 指向 api.deepseek.com）
+    deepseek_key = os.getenv("DEEPSEEK_API_KEY")
+    if deepseek_key:
+        model = os.getenv("DEEPSEEK_MODEL", "deepseek-flash")
+        logger.info("使用 DeepSeek 模型：%s", model)
+        return OpenAIChatCompletionClient(
+            model=model,
+            api_key=deepseek_key,
+            base_url="https://api.deepseek.com",
+        )
+
     ollama_model = os.getenv("OLLAMA_MODEL")
     if ollama_model:
         logger.info("使用 Ollama 本地模型：%s", ollama_model)
@@ -65,7 +77,7 @@ def build_model_client():
     fallback = os.getenv("OLLAMA_MODEL", "llama3.2")
     logger.warning(
         "未检测到任何模型配置，回退到本地 Ollama（%s @ 默认 localhost:11434）。"
-        "请设置 OPENAI_API_KEY 或 OLLAMA_MODEL 环境变量。",
+        "请设置 DEEPSEEK_API_KEY / OPENAI_API_KEY / OLLAMA_MODEL 环境变量。",
         fallback,
     )
     return OllamaChatClient(model=fallback)

@@ -59,10 +59,11 @@ uvicorn app.main:app --reload --port 8000
 - `SECRET_KEY`：JWT 签名密钥（生产必须更换）
 - `ACCESS_TOKEN_EXPIRE_MINUTES`：令牌有效期，默认 60 分钟
 - `DATABASE_URL`：数据库地址，默认 `sqlite:///./memo.db`
-- Agent 模型配置（三选一，密钥只保留在服务端，绝不进代码/前端）：
-  - `OPENAI_API_KEY` + `OPENAI_CHAT_MODEL`：OpenAI（默认 `gpt-4o-mini`）
-  - `AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_MODEL`：Azure OpenAI
+- Agent 模型配置（多选一，密钥只保留在服务端，绝不进代码/前端）：
+  - `DEEPSEEK_API_KEY` + `DEEPSEEK_MODEL`（默认 `deepseek-flash`）：DeepSeek（OpenAI 兼容，推荐）
   - `OLLAMA_MODEL`：本地 Ollama（免费，需本地运行 ollama）
+  - `OPENAI_API_KEY` + `OPENAI_CHAT_MODEL`：OpenAI
+  - `AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_MODEL`：Azure OpenAI
 
 > 都未配置时会回退到本地 Ollama（`llama3.2` @ `localhost:11434`），并打印警告。
 

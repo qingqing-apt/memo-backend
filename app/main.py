@@ -1,5 +1,10 @@
 import logging
 
+from dotenv import load_dotenv
+
+# 先加载 .env（必须在导入会读环境变量的模块之前）
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

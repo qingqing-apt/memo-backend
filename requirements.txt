@@ -3,6 +3,7 @@ uvicorn[standard]>=0.29,<1.0
 sqlalchemy>=2.0,<3.0
 PyJWT>=2.8,<3.0
 pydantic>=2.5,<3.0
+python-dotenv>=1.0,<2.0
 
 # ---- 第三天新增：Microsoft Agent Framework + AG-UI（实际安装版本）----
 agent-framework==1.23.0
