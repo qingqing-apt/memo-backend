@@ -1,0 +1,115 @@
+<svg viewBox="0 0 680 800" width="680" height="800" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+<marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+<circle cx="5" cy="5" r="3" fill="context-stroke"/>
+</marker>
+</defs>
+
+<rect x="0" y="0" width="680" height="800" fill="#ffffff"/>
+
+<text x="340" y="24" text-anchor="middle" font-size="15" font-weight="500" fill="#1f2328">备忘录 Agent 交互图（前端—Runtime—API—Agent—模型—工具）</text>
+
+<g font-size="12" text-anchor="middle">
+<g>
+<rect x="15" y="40" width="86" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="58" y="57" fill="#0C447C" font-weight="500">浏览器</text>
+<text x="58" y="73" fill="#185FA5">React+CopilotKit</text>
+<line x1="58" y1="84" x2="58" y2="700" stroke="#B5D4F4" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+<g>
+<rect x="125" y="40" width="86" height="44" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="168" y="57" fill="#04342C" font-weight="500">Runtime</text>
+<text x="168" y="73" fill="#0F6E56">Node Express</text>
+<line x1="168" y1="84" x2="168" y2="700" stroke="#9FE1CB" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+<g>
+<rect x="235" y="40" width="86" height="44" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+<text x="278" y="57" fill="#173404" font-weight="500">/agent</text>
+<text x="278" y="73" fill="#3B6D11">FastAPI + AG-UI</text>
+<line x1="278" y1="84" x2="278" y2="700" stroke="#C0DD97" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+<g>
+<rect x="345" y="40" width="86" height="44" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="388" y="57" fill="#26215C" font-weight="500">Agent</text>
+<text x="388" y="73" fill="#534AB7">MemoAssistant</text>
+<line x1="388" y1="84" x2="388" y2="700" stroke="#CECBF6" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+<g>
+<rect x="455" y="40" width="86" height="44" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="498" y="57" fill="#412402" font-weight="500">模型</text>
+<text x="498" y="73" fill="#854F0B">DeepSeek</text>
+<line x1="498" y1="84" x2="498" y2="700" stroke="#FAC775" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+<g>
+<rect x="565" y="40" width="86" height="44" rx="8" fill="#FBEAF0" stroke="#993556" stroke-width="1"/>
+<text x="608" y="57" fill="#4B1528" font-weight="500">工具</text>
+<text x="608" y="73" fill="#993556">list_my_memos</text>
+<line x1="608" y1="84" x2="608" y2="700" stroke="#F4C0D1" stroke-width="1" stroke-dasharray="4 3"/>
+</g>
+</g>
+
+<g font-size="11" fill="#1f2328">
+<line x1="58" y1="110" x2="168" y2="110" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="113" y="103" text-anchor="middle" font-weight="500">1. 发送消息</text>
+<text x="113" y="117" text-anchor="middle">POST /api/copilotkit</text>
+<text x="113" y="130" text-anchor="middle" fill="#5F5E5A">带 Authorization: JWT</text>
+
+<line x1="168" y1="155" x2="278" y2="155" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="223" y="148" text-anchor="middle" font-weight="500">2. 透传</text>
+<text x="223" y="162" text-anchor="middle">POST /agent</text>
+<text x="223" y="175" text-anchor="middle" fill="#5F5E5A">Authorization 转发</text>
+
+<path d="M278 210 Q292 210 292 224 L292 240 Q292 254 278 254" fill="none" stroke="#3B6D11" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="292" y="200" text-anchor="middle" font-weight="500" fill="#A32D2D">3. 校验 JWT</text>
+<text x="292" y="240" text-anchor="middle" fill="#3B6D11">写 user_id 到 ContextVar</text>
+
+<line x1="278" y1="280" x2="388" y2="280" stroke="#3B6D11" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="333" y="273" text-anchor="middle" font-weight="500">4. 交给 Agent</text>
+<text x="333" y="300" text-anchor="middle" fill="#5F5E5A">scope = user:&lt;id&gt;</text>
+
+<line x1="388" y1="330" x2="498" y2="330" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="443" y="323" text-anchor="middle" font-weight="500">5. 推理</text>
+<text x="443" y="337" text-anchor="middle">prompt + 工具定义</text>
+
+<line x1="498" y1="360" x2="388" y2="360" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="443" y="353" text-anchor="middle" font-weight="500">6. tool_call</text>
+<text x="443" y="367" text-anchor="middle">list_my_memos</text>
+
+<line x1="388" y1="400" x2="608" y2="400" stroke="#993556" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="498" y="393" text-anchor="middle" font-weight="500">7. 执行工具</text>
+<text x="498" y="407" text-anchor="middle">读 ContextVar 的 user_id</text>
+<text x="498" y="420" text-anchor="middle" fill="#5F5E5A">只查该用户备忘</text>
+
+<line x1="608" y1="445" x2="388" y2="445" stroke="#993556" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="498" y="438" text-anchor="middle" font-weight="500">8. 返回结果</text>
+<text x="498" y="452" text-anchor="middle">备忘录 JSON</text>
+
+<line x1="388" y1="490" x2="498" y2="490" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="443" y="483" text-anchor="middle" font-weight="500">9. 工具结果</text>
+
+<line x1="498" y1="520" x2="388" y2="520" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="443" y="513" text-anchor="middle" font-weight="500">10. 最终文本</text>
+<text x="443" y="527" text-anchor="middle" fill="#A32D2D">失败则 RUN_ERROR</text>
+
+<line x1="388" y1="565" x2="58" y2="565" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="278" cy="565" r="3" fill="#534AB7"/>
+<circle cx="168" cy="565" r="3" fill="#534AB7"/>
+<text x="223" y="558" text-anchor="middle" font-weight="500">11. AG-UI 事件流（SSE）</text>
+<text x="223" y="578" text-anchor="middle" fill="#5F5E5A">RUN_STARTED → TEXT_MESSAGE_CONTENT → RUN_FINISHED</text>
+
+<path d="M58 620 Q44 620 44 634 L44 650 Q44 664 58 664" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="58" y="612" text-anchor="middle" font-weight="500">12. 逐步渲染</text>
+<text x="58" y="682" text-anchor="middle" fill="#5F5E5A">文本逐字显示</text>
+</g>
+
+<g font-size="11" fill="#5F5E5A">
+<line x1="30" y1="710" x2="650" y2="710" stroke="#D3D1C7" stroke-width="1"/>
+<text x="30" y="728">图注 · 接口：POST /api/copilotkit（浏览器→Runtime）· POST /agent（Runtime→Python）</text>
+<text x="30" y="744">流式：SSE（text/event-stream）· 认证：Authorization header 全程透传，Python 端校验</text>
+<text x="30" y="760">地址：浏览器 :8080 · Runtime :3000 · Python :8000/agent（容器内经共享网络 backend:8000）</text>
+<text x="30" y="776" fill="#A32D2D">错误路径：JWT 无效 → 步骤3 返回 401（不调模型）；运行中失败 → RUN_ERROR 事件</text>
+</g>
+</svg>
