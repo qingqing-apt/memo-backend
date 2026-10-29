@@ -118,6 +118,7 @@ docker compose up -d --build
 
 - **评测用例**：`tests/agent/`，12 个用例（正常 / 需要工具 / 不需要工具 / 模糊 / 超范围 / 异常 / 安全 / 工具层），运行方式见 `tests/agent/README.md`
 - **优化记录**：`docs/day-4-agent-optimization.md`（基线、问题分析、改动、前后对比、限制、复现步骤、复盘）
+- **汇报文档**：`docs/day-4-report.md`（结论版，给评审快速看）
 - **本轮改动**：
   - `app/agent/memo_agent.py`：新增 3 条交互规则（含糊请求先追问、写操作直接说明只读、工具报错不重复调用）
   - `app/agent/tools.py`：关键词非空 + 长度校验、数据库异常统一兜底（错误码 `DB_UNAVAILABLE`，不泄露堆栈）、输出条数与长度上限
