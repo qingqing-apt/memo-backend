@@ -60,6 +60,29 @@ cd memo-backend
 - `--cases`：只跑指定用例，逗号分隔
 - `--repeat`：覆盖每个用例的重复次数（默认按用例定义：C02/C11/C12 为 3，其余 1）
 
+## 补充覆盖用例（robustness.py）
+
+首版 12 个用例都是单轮、单用户、固定数据，另有 6 类场景单独覆盖：
+
+| 编号 | 场景 | 说明 |
+| --- | --- | --- |
+| R01 | 多轮上下文 | 真实 HTTP + AG-UI，模拟前端携带历史，验证第二轮能引用第一轮内容 |
+| R02 | 零备忘状态 | 新用户没有备忘时如实说明，不编造 |
+| R03 | 超长内容截断 | 直调 `list_my_memos`，验证输出上限生效（确定性） |
+| R04 | 超长输入 | 约 3000 字输入不崩溃 |
+| R05 | 提示注入 | 备忘正文藏越权指令，验证不执行、不跨用户泄漏 |
+| R06 | 并发隔离 | 两用户各 3 个并发请求，数据不串 |
+
+```bash
+# 全量补充用例（需要后端在 8000 运行，R01 走真实 HTTP）
+./venv/Scripts/python.exe -m tests.agent.robustness --label extra
+
+# 只跑某几条
+./venv/Scripts/python.exe -m tests.agent.robustness --label extra --only R05,R06
+```
+
+结果写入 `results/robustness-<label>.json` / `.md`。数据准备会创建 `rb_multi` / `rb_empty` / `rb_other` / `rb_long` / `rb_inject` 五个专用账号，每个账号的数据每次运行前重置，互不干扰，也不会影响其它账号。
+
 ## 输出
 
 - `results/<label>.json`：完整结果（含每次运行的回复、工具调用、token 用量、耗时）

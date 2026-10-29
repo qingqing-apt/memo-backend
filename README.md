@@ -98,8 +98,10 @@ docker compose up -d --build
   - 仅只读，无新增 / 修改 / 删除工具
   - 会话状态按用户隔离（`authorization_scope_resolver` 返回 `user:<id>` 作为 scope）
 - **会话行为**：
-  - 对话上下文由 AG-UI 的 `threadId` 关联，同一 `threadId` 的多轮对话在进程内有效
-  - 历史保存在**内存快照**（`InMemoryAGUIThreadSnapshotStore`），**服务重启后清空**；今天不要求数据库持久化
+  - 每次 `POST /agent` 由**客户端携带完整 `messages` 历史**（CopilotKit 前端默认行为），服务端按无状态方式处理
+  - 本项目**未配置服务端快照存储**（`add_agent_framework_fastapi_endpoint` 的 `snapshot_store` 默认为 `None`）：刷新页面 / 换标签页 / 换设备后历史即丢失，与服务端是否重启无关
+  - `threadId` 用于标识一次会话，并配合 `authorization_scope_resolver` 做按用户隔离（`user:<id>`）
+  - 第四天补充用例 R01 用真实 HTTP 验证过：只发新消息时模型无法回忆上一轮，带上历史后可以（见 `tests/agent/robustness.py`）
 
 ### 实际安装版本
 
@@ -111,7 +113,7 @@ docker compose up -d --build
 ### 已知问题 / 未完成项
 
 - **容器启动**：`Dockerfile` / `docker-compose.yml` 已在第三天交付，本轮评测未改动；受开发环境限制（无 Docker）未在容器内复现，按约定不计入未完成项
-- **会话不持久化**：历史在内存中，服务重启后清空
+- **会话不持久化**：历史由前端每次请求携带，刷新页面即丢失；服务端未配置 `snapshot_store`，不保存对话
 - **评测判定非语义**：`tests/agent/` 的检查依赖关键词匹配，遇到表达变体可能误判
 
 ## Agent 评测与优化（第四天）
