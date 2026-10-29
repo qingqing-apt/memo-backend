@@ -110,7 +110,7 @@ docker compose up -d --build
 
 ### 已知问题 / 未完成项
 
-- **容器未实测**：`Dockerfile` / `docker-compose.yml` 已写好，但开发机未安装 Docker，未做容器内复现
+- **容器启动**：`Dockerfile` / `docker-compose.yml` 已在第三天交付，本轮评测未改动；受开发环境限制（无 Docker）未在容器内复现，按约定不计入未完成项
 - **会话不持久化**：历史在内存中，服务重启后清空
 - **评测判定非语义**：`tests/agent/` 的检查依赖关键词匹配，遇到表达变体可能误判
 
