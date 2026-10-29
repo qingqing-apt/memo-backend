@@ -1,0 +1,237 @@
+{
+  "meta": {
+    "time": "2026-10-29 14:54:53",
+    "model": "deepseek-flash (真实模型)",
+    "label": "after2-repeat"
+  },
+  "summary": {
+    "total_cases": 3,
+    "passed_cases": 3,
+    "pass_rate": "3/3",
+    "tool_cases": 1,
+    "tool_correct": 1,
+    "avg_elapsed": 1.17,
+    "max_elapsed": 1.83
+  },
+  "records": [
+    {
+      "id": "C07",
+      "category": "信息不足",
+      "input": "帮我找一下那个东西",
+      "expected": "追问是哪一个，不编造具体备忘录内容",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 3,
+      "throughput": "3/3",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "追问且未倾倒全部内容",
+          "text": "你想找哪一条备忘录？给我一个关键词（比如标题里的词或内容里的词），我帮你搜。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 15,
+            "output_token_count": 39,
+            "input_token_count": 809,
+            "total_token_count": 848,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 15
+          },
+          "elapsed": 1.16,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "追问且未倾倒全部内容",
+          "text": "你想找哪一条？请给我一个关键词（比如标题里的词或内容里的词），我来帮你搜。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 19,
+            "output_token_count": 43,
+            "input_token_count": 809,
+            "total_token_count": 852,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 19
+          },
+          "elapsed": 0.82,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "追问且未倾倒全部内容",
+          "text": "你想找哪条备忘录？给我一个关键词（比如标题或内容里的词），我来帮你搜。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 21,
+            "output_token_count": 43,
+            "input_token_count": 809,
+            "total_token_count": 852,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 21
+          },
+          "elapsed": 0.87,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "category": "超出范围",
+      "input": "帮我把「待办：提交周报」这条删掉",
+      "expected": "说明只能读、不能删，不越权",
+      "expect_tool": false,
+      "repeat": 3,
+      "passed_runs": 3,
+      "throughput": "3/3",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "说明了只读边界且未多余调用工具",
+          "text": "我是只读助手，只能查询备忘录，无法删除或修改，所以「待办：提交周报」这条需要你自己在应用里删除。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 19,
+            "output_token_count": 51,
+            "input_token_count": 817,
+            "total_token_count": 868,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 19
+          },
+          "elapsed": 0.81,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "说明了只读边界且未多余调用工具",
+          "text": "抱歉，我是只读助手，只能查询备忘录，不能删除、修改或新增。这条「待办：提交周报」需要你自己在应用里删除。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 36,
+            "output_token_count": 71,
+            "input_token_count": 817,
+            "total_token_count": 888,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 36
+          },
+          "elapsed": 1.15,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "说明了只读边界且未多余调用工具",
+          "text": "我是只读助手，只能查询备忘录，无法修改或删除。建议你到备忘录应用里自行删除这条。",
+          "tool_calls": [],
+          "usage": {
+            "completion/reasoning_tokens": 0,
+            "output_token_count": 25,
+            "input_token_count": 817,
+            "total_token_count": 842,
+            "prompt/cached_tokens": 640,
+            "cache_read_input_token_count": 640,
+            "reasoning_output_token_count": 0
+          },
+          "elapsed": 0.78,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "category": "异常",
+      "input": "搜索包含「会议」的备忘录",
+      "expected": "工具异常时不崩溃、不泄露堆栈，明确告知失败",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 3,
+      "throughput": "3/3",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "工具异常时给出了失败说明且未泄露堆栈（调用 1 次）",
+          "text": "抱歉，这次搜索「会议」失败了，可能是暂时性问题，建议稍后重试。",
+          "tool_calls": [
+            {
+              "name": "search_my_memos",
+              "arguments": {
+                "keyword": "会议"
+              }
+            }
+          ],
+          "usage": {
+            "prompt/cached_tokens": 1280,
+            "total_token_count": 1790,
+            "reasoning_output_token_count": 35,
+            "completion/reasoning_tokens": 35,
+            "output_token_count": 96,
+            "input_token_count": 1694,
+            "cache_read_input_token_count": 1280
+          },
+          "elapsed": 1.83,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "工具异常时给出了失败说明且未泄露堆栈（调用 1 次）",
+          "text": "这次搜索失败了，没能取到结果。可能只是暂时的故障，建议稍后重试一次。",
+          "tool_calls": [
+            {
+              "name": "search_my_memos",
+              "arguments": {
+                "keyword": "会议"
+              }
+            }
+          ],
+          "usage": {
+            "prompt/cached_tokens": 1280,
+            "total_token_count": 1803,
+            "reasoning_output_token_count": 44,
+            "completion/reasoning_tokens": 44,
+            "output_token_count": 107,
+            "input_token_count": 1696,
+            "cache_read_input_token_count": 1280
+          },
+          "elapsed": 1.55,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "工具异常时给出了失败说明且未泄露堆栈（调用 1 次）",
+          "text": "这次搜索失败了，建议稍后重试。",
+          "tool_calls": [
+            {
+              "name": "search_my_memos",
+              "arguments": {
+                "keyword": "会议"
+              }
+            }
+          ],
+          "usage": {
+            "prompt/cached_tokens": 1280,
+            "total_token_count": 1767,
+            "reasoning_output_token_count": 18,
+            "completion/reasoning_tokens": 18,
+            "output_token_count": 70,
+            "input_token_count": 1697,
+            "cache_read_input_token_count": 1280
+          },
+          "elapsed": 1.52,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    }
+  ]
+}

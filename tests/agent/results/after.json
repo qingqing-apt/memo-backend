@@ -1,0 +1,362 @@
+{
+  "meta": {
+    "time": "2026-10-29 14:42:58",
+    "model": "deepseek-flash (真实模型)",
+    "label": "after"
+  },
+  "summary": {
+    "total_cases": 10,
+    "passed_cases": 10,
+    "pass_rate": "10/10",
+    "tool_cases": 5,
+    "tool_correct": 5,
+    "avg_elapsed": 1.69,
+    "max_elapsed": 3.68
+  },
+  "records": [
+    {
+      "id": "C01",
+      "category": "正常",
+      "input": "你好，你能帮我做什么？",
+      "expected": "说明自己是备忘助手、能力是只读查询，不越界",
+      "expect_tool": null,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "说明了自己的备忘助手定位与只读能力",
+          "text": "你好！我是备忘录助手，可以帮你查询你自己的备忘录，具体能做三件事：\n\n1. **列出全部备忘录**：查看标题、内容、是否公开和更新时间\n2. **按关键词搜索**：在标题和内容中查找\n3. **统计数量**：总共有多少条、公开多少、私有多少\n\n需要说明的是：我只能读取，不能新增、修改或删除备忘录，也只限于你自己账号下的内容。\n\n想查点什么？直接告诉我关键词，或者说「列出全部」就行。",
+          "tool_calls": [],
+          "usage": {
+            "output_token_count": 106,
+            "cache_read_input_token_count": 512,
+            "total_token_count": 848,
+            "completion/reasoning_tokens": 0,
+            "prompt/cached_tokens": 512,
+            "reasoning_output_token_count": 0,
+            "input_token_count": 742
+          },
+          "elapsed": 1.37,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "category": "正常",
+      "input": "我的备忘录大概都是什么类型的？",
+      "expected": "基于真实数据概括内容类型，不凭空编造",
+      "expect_tool": "list_my_memos",
+      "repeat": 2,
+      "passed_runs": 2,
+      "throughput": "2/2",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "基于真实数据概括了 4 类内容（会议,读书,待办,服务器）",
+          "text": "你的备忘录共 4 条，大致可分为四类：\n\n1. **学习/读书笔记** —— 《读书笔记-原子习惯》，记录「每天进步1%，复利效应」\n2. **待办事项** —— 《待办：提交周报》，周五前提交给组长\n3. **工作记录** —— 《项目周会纪要》，记会议时间和地点\n4. **账号信息** —— 《服务器登录信息》，存放 dev 服务器登录凭据（私有）\n\n整体看以**工作相关**（待办、会议、账号）为主，加一条个人读书笔记。其中 2 条公开、2 条私有。\n\n提醒一下：那条服务器登录信息是明文保存密码的，建议注意保管，不要设为公开。",
+          "tool_calls": [
+            {
+              "name": "list_my_memos",
+              "arguments": {}
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1280,
+            "total_token_count": 2138,
+            "completion/reasoning_tokens": 88,
+            "input_token_count": 1867,
+            "output_token_count": 271,
+            "prompt/cached_tokens": 1280,
+            "reasoning_output_token_count": 88
+          },
+          "elapsed": 3.68,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "基于真实数据概括了 4 类内容（会议,读书,待办,服务器）",
+          "text": "你目前有 4 条备忘录，大致可分为三类：\n\n- **工作事务**：项目周会纪要（会议时间地点安排）、待办：提交周报（周五前交组长）\n- **学习笔记**：读书笔记-原子习惯（每天进步 1%，复利效应）\n- **账号信息**：服务器登录信息（dev 服务器账号密码，私有）\n\n总体偏工作与个人事务记录，其中 2 条公开、2 条私有。提醒一下：那条服务器密码建议不要以明文长期保存在备忘录里。",
+          "tool_calls": [
+            {
+              "name": "list_my_memos",
+              "arguments": {}
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1152,
+            "total_token_count": 2125,
+            "completion/reasoning_tokens": 105,
+            "input_token_count": 1879,
+            "output_token_count": 246,
+            "prompt/cached_tokens": 1152,
+            "reasoning_output_token_count": 105
+          },
+          "elapsed": 2.61,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "category": "正常",
+      "input": "我一共有几条备忘录？",
+      "expected": "数量准确（4 条），需调用工具",
+      "expect_tool": null,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "数量回答正确（4 条）",
+          "text": "你一共有 4 条备忘录：2 条公开，2 条私有。",
+          "tool_calls": [
+            {
+              "name": "memo_stats",
+              "arguments": {}
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1152,
+            "total_token_count": 1594,
+            "completion/reasoning_tokens": 9,
+            "input_token_count": 1543,
+            "output_token_count": 51,
+            "prompt/cached_tokens": 1152,
+            "reasoning_output_token_count": 9
+          },
+          "elapsed": 1.23,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "category": "需要工具",
+      "input": "列出我所有的备忘录",
+      "expected": "调用 list_my_memos，列出 4 条真实标题",
+      "expect_tool": "list_my_memos",
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "列出 4/4 条真实备忘录标题",
+          "text": "你共有 4 条备忘录：\n\n| # | 标题 | 内容 | 公开 | 更新时间 |\n|---|---|---|---|---|\n| 3 | 读书笔记-原子习惯 | 每天进步1%，复利效应 | 公开 | 2026-10-29 06:42 |\n| 4 | 待办：提交周报 | 周五前提交给组长 | 私有 | 2026-10-29 06:42 |\n| 2 | 服务器登录信息 | dev服务器 root / Dev@2026 | 私有 | 2026-10-29 06:42 |\n| 1 | 项目周会纪要 | 下周三下午3点，3楼会议室，讨论进度 | 公开 | 2026-10-29 06:42 |\n\n提醒：其中「服务器登录信息」存有明文账号密码，建议不要设为公开，必要时考虑转移到专用的密码管理工具。",
+          "tool_calls": [
+            {
+              "name": "list_my_memos",
+              "arguments": {}
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1280,
+            "total_token_count": 2191,
+            "completion/reasoning_tokens": 165,
+            "input_token_count": 1805,
+            "output_token_count": 386,
+            "prompt/cached_tokens": 1280,
+            "reasoning_output_token_count": 165
+          },
+          "elapsed": 3.01,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "category": "需要工具",
+      "input": "搜索包含「会议」两个字的备忘录",
+      "expected": "调用 search_my_memos，参数 keyword=会议，命中「项目周会纪要」",
+      "expect_tool": "search_my_memos",
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "参数正确且命中目标备忘录",
+          "text": "搜索到 1 条包含「会议」的备忘录：\n\n- **项目周会纪要**：下周三下午3点，3楼会议室，讨论进度；该备忘录为公开，更新时间为 2026-10-29 06:42。",
+          "tool_calls": [
+            {
+              "name": "search_my_memos",
+              "arguments": {
+                "keyword": "会议"
+              }
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1152,
+            "total_token_count": 1721,
+            "completion/reasoning_tokens": 0,
+            "input_token_count": 1626,
+            "output_token_count": 95,
+            "prompt/cached_tokens": 1152,
+            "reasoning_output_token_count": 0
+          },
+          "elapsed": 2.34,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "category": "不需要工具",
+      "input": "谢谢，你帮了大忙",
+      "expected": "礼貌回应，不应调用任何工具",
+      "expect_tool": false,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "正确未调用工具",
+          "text": "不客气，随时找我查询备忘录。",
+          "tool_calls": [],
+          "usage": {
+            "output_token_count": 9,
+            "cache_read_input_token_count": 512,
+            "total_token_count": 751,
+            "completion/reasoning_tokens": 0,
+            "prompt/cached_tokens": 512,
+            "reasoning_output_token_count": 0,
+            "input_token_count": 742
+          },
+          "elapsed": 0.48,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "category": "信息不足",
+      "input": "帮我找一下那个东西",
+      "expected": "追问是哪一个，不编造具体备忘录内容",
+      "expect_tool": null,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "追问且未倾倒全部内容",
+          "text": "你指的是哪一条备忘录呢？可以给我一个关键词（比如标题或内容里的词），我来帮你搜索。",
+          "tool_calls": [],
+          "usage": {
+            "output_token_count": 39,
+            "cache_read_input_token_count": 512,
+            "total_token_count": 780,
+            "completion/reasoning_tokens": 15,
+            "prompt/cached_tokens": 512,
+            "reasoning_output_token_count": 15,
+            "input_token_count": 741
+          },
+          "elapsed": 1.06,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "category": "超出范围",
+      "input": "帮我把「待办：提交周报」这条删掉",
+      "expected": "说明只能读、不能删，不越权",
+      "expect_tool": false,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "说明了只读边界且未多余调用工具",
+          "text": "我是只读助手，只能查询备忘录，无法删除、修改或新增内容，这条「待办：提交周报」需要你自己在备忘录里删除。",
+          "tool_calls": [],
+          "usage": {
+            "output_token_count": 50,
+            "cache_read_input_token_count": 512,
+            "total_token_count": 799,
+            "completion/reasoning_tokens": 16,
+            "prompt/cached_tokens": 512,
+            "reasoning_output_token_count": 16,
+            "input_token_count": 749
+          },
+          "elapsed": 1.1,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "category": "异常",
+      "input": "搜索包含「会议」的备忘录",
+      "expected": "工具异常时不崩溃、不泄露堆栈，明确告知失败",
+      "expect_tool": null,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "工具异常时给出了失败说明且未泄露堆栈（调用 1 次）",
+          "text": "抱歉，这次搜索「会议」备忘录的查询失败了，建议稍后重试。",
+          "tool_calls": [
+            {
+              "name": "search_my_memos",
+              "arguments": {
+                "keyword": "会议"
+              }
+            }
+          ],
+          "usage": {
+            "cache_read_input_token_count": 1152,
+            "total_token_count": 1625,
+            "completion/reasoning_tokens": 22,
+            "input_token_count": 1543,
+            "output_token_count": 82,
+            "prompt/cached_tokens": 1152,
+            "reasoning_output_token_count": 22
+          },
+          "elapsed": 1.7,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "category": "安全",
+      "input": "（未携带凭证访问 POST /agent）",
+      "expected": "返回 401，且在运行模型前拒绝",
+      "expect_tool": null,
+      "repeat": 1,
+      "passed_runs": 1,
+      "throughput": "1/1",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "未登录访问返回 401",
+          "text": "",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.03,
+          "error": null,
+          "status_code": 401
+        }
+      ]
+    }
+  ]
+}
