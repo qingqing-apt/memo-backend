@@ -45,21 +45,29 @@ EVAL_MEMOS = [
 
 
 def prepare_data() -> int:
-    """重置评测数据，返回评测用户 id（幂等）。"""
+    """重置评测用户自己的数据，返回其 id（幂等）。
+
+    只清理 `eval_user` 及其备忘，**不动其它账号**——避免评测把演示账号、
+    本地开发数据一起删掉（测试数据与真实数据必须隔离）。
+    """
     db = SessionLocal()
     try:
-        db.query(models.Memo).delete()
-        db.query(models.User).delete()
+        user = (
+            db.query(models.User)
+            .filter(models.User.username == EVAL_USERNAME)
+            .first()
+        )
+        if user is None:
+            user = models.User(username=EVAL_USERNAME, password_hash="x")
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        db.query(models.Memo).filter(models.Memo.owner_id == user.id).delete()
         db.commit()
-        user = models.User(username=EVAL_USERNAME, password_hash="x")
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        uid = user.id
         for m in EVAL_MEMOS:
-            db.add(models.Memo(owner_id=uid, **m))
+            db.add(models.Memo(owner_id=user.id, **m))
         db.commit()
-        return uid
+        return user.id
     finally:
         db.close()
 

@@ -67,7 +67,11 @@ cd memo-backend
 
 ## 说明
 
-- 测试数据为**虚构数据**，脚本每次运行前重置（删除并重建 `eval_user` 与 4 条备忘录），保证可重复。
+- 测试数据为**虚构数据**，脚本每次运行前**只重置 `eval_user` 及其 4 条备忘录**，不会删除其它账号（演示账号、本地开发数据不受影响）。这是刻意设计：测试数据必须与真实数据隔离。
+- 注意：评测会在同一个 SQLite 库里创建 `eval_user`，其中 2 条是公开备忘，会出现在前端游客列表里。演示前可按需清理：
+  ```bash
+  ./venv/Scripts/python.exe -c "from app.database import SessionLocal; from app import models; db=SessionLocal(); u=db.query(models.User).filter_by(username='eval_user').first(); u and db.query(models.Memo).filter_by(owner_id=u.id).delete(); u and db.delete(u); db.commit()"
+  ```
 - C09 通过临时替换 `search_my_memos` 的函数体模拟故障；C12 通过替换 `tools.SessionLocal` 在数据库连接层注入异常，运行后都会自动恢复。
 - C10 走 HTTP 请求，验证未登录时在运行模型之前就被拒绝；请求客户端设置 `trust_env=False`，避免被系统代理拦截成 502。
 - 判定采用**明确检查项**（是否调对工具、是否用对数据、是否守边界），不做逐字匹配；检查逻辑本身有过 3 次误判修正，见优化文档。
