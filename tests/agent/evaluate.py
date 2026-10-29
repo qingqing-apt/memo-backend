@@ -97,7 +97,8 @@ async def run_agent_case(agent, user_id: int, case: Case) -> CaseResult:
 async def run_http_case(case: Case) -> CaseResult:
     start = time.time()
     try:
-        async with httpx.AsyncClient(timeout=30) as client:
+        # trust_env=False：访问本机服务不经过系统代理，避免被代理拦成 502
+        async with httpx.AsyncClient(timeout=30, trust_env=False) as client:
             resp = await client.post(
                 f"{BACKEND_URL}/agent",
                 json={
@@ -133,11 +134,46 @@ def restore_search_tool(original) -> None:
     tools.search_my_memos.func = original
 
 
+def run_tool_case(case: Case, user_id: int) -> CaseResult:
+    """直接调用工具函数（绕过模型），验证工具层参数校验与异常兜底。
+
+    进程内注入故障，不改评测数据；工具函数本身仍是线上代码。
+    """
+    from app.agent import tools
+
+    _current_user_id.set(user_id)
+    start = time.time()
+    original_session = tools.SessionLocal
+    try:
+        if case.tool_probe == "db_failure":
+
+            def _boom():
+                raise RuntimeError("模拟数据库连接失败")
+
+            tools.SessionLocal = _boom
+        try:
+            if case.tool_probe == "blank_keyword":
+                out = tools.search_my_memos.func("")
+            elif case.tool_probe == "db_failure":
+                out = tools.search_my_memos.func("会议")
+            else:
+                out = ""
+        except Exception as exc:  # noqa: BLE001
+            return CaseResult(
+                error=f"{type(exc).__name__}: {exc}", elapsed=time.time() - start
+            )
+        return CaseResult(text=str(out), elapsed=time.time() - start)
+    finally:
+        tools.SessionLocal = original_session
+
+
 async def run_case(agent, user_id: int, case: Case) -> dict:
     runs = []
     for _ in range(max(1, case.repeat)):
         if case.mode == "http":
             result = await run_http_case(case)
+        elif case.mode == "tool":
+            result = run_tool_case(case, user_id)
         else:
             result = await run_agent_case(agent, user_id, case)
         passed, reason = case.check(result)

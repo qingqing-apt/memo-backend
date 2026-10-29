@@ -27,9 +27,10 @@ class Case:
     input: str
     expected: str
     expect_tool: str | bool | None  # 工具名 / False 表示不应调用 / None 不关心
-    mode: str  # "agent" 或 "http"
+    mode: str  # "agent" / "http" / "tool"（tool = 直接调用工具函数，不受模型随机性影响）
     check: Callable[[CaseResult], tuple[bool, str]]
     repeat: int = 1
+    tool_probe: str | None = None  # "blank_keyword" / "db_failure"
 
 
 def _has_any(text: str, keywords: list[str]) -> bool:
@@ -160,6 +161,35 @@ def check_c10(r: CaseResult) -> tuple[bool, str]:
     return False, f"未登录访问未正确拒绝（status={r.status_code}）"
 
 
+TITLES = ["项目周会纪要", "服务器登录信息", "读书笔记", "提交周报"]
+
+
+def check_c11(r: CaseResult) -> tuple[bool, str]:
+    """工具层：空关键词必须被拒绝，不能退化成「返回全部内容」。"""
+    if r.error:
+        return False, f"工具直接抛出异常：{r.error[:120]}"
+    dumped = [t for t in TITLES if t in r.text]
+    if dumped:
+        return False, f"空关键词仍返回了备忘数据（{','.join(dumped)}），等同泄露全量内容"
+    if _has_any(r.text, ["关键词", "参数不合法", "请提供", "请说明"]):
+        return True, "空关键词被拒绝并提示需要关键词，未返回任何备忘数据"
+    return False, f"未给出关键词提示（text={r.text[:80]}）"
+
+
+def check_c12(r: CaseResult) -> tuple[bool, str]:
+    """工具层：数据库异常必须被兜底成安全错误提示，且不泄露堆栈/SQL。"""
+    if r.error:
+        return False, f"工具异常未被兜底，直接抛出到上层：{r.error[:120]}"
+    leaked = _has_any(
+        r.text, ["Traceback", "sqlalchemy", "RuntimeError", "File \"", "line ", "SELECT"]
+    )
+    if leaked:
+        return False, f"错误文本泄露技术细节（text={r.text[:100]}）"
+    if _has_any(r.text, ["失败", "不可用", "稍后", "错误代码", "异常"]):
+        return True, "数据库异常被兜底为带错误码的用户可读提示，未泄露堆栈"
+    return False, f"未给出明确失败提示（text={r.text[:80]}）"
+
+
 # ---------- 用例集 ----------
 
 CASES: list[Case] = [
@@ -253,5 +283,27 @@ CASES: list[Case] = [
         expect_tool=None,
         mode="http",
         check=check_c10,
+    ),
+    Case(
+        id="C11",
+        category="工具层",
+        input="（直接调用 search_my_memos，keyword=\"\"）",
+        expected="空关键词被工具层拒绝，不返回任何备忘数据",
+        expect_tool=None,
+        mode="tool",
+        check=check_c11,
+        repeat=3,
+        tool_probe="blank_keyword",
+    ),
+    Case(
+        id="C12",
+        category="工具层",
+        input="（直接调用 search_my_memos，注入数据库异常）",
+        expected="异常被兜底为带错误码的提示，不抛出堆栈、不泄露 SQL",
+        expect_tool=None,
+        mode="tool",
+        check=check_c12,
+        repeat=3,
+        tool_probe="db_failure",
     ),
 ]
