@@ -90,8 +90,8 @@ docker compose up -d --build
 - **端点**：`POST /agent`（前端经 Vite 代理 `/api/agent` 访问）
 - **登录保护**：请求必须携带 `Authorization: Bearer <token>`；未登录 / 无效 token 在运行模型前即返回 `401`
 - **只读工具**（后端真实执行）：
-  - `list_my_memos`：列出当前用户全部备忘
-  - `search_my_memos`：按关键词搜索当前用户备忘
+  - `list_my_memos`：列出当前用户全部备忘（单条内容截断 200 字、最多 20 条）
+  - `search_my_memos`：按关键词搜索当前用户备忘（**keyword 必填，空关键词被工具层直接拒绝**，不会退化成返回全部）
   - `memo_stats`：统计数量（总数 / 公开 / 私有）
 - **安全边界**：
   - 工具只读取**后端从 JWT 解析出的已验证 user_id**（通过 ContextVar 注入），工具签名不暴露 user_id，模型与浏览器都无法指定用户
@@ -110,8 +110,23 @@ docker compose up -d --build
 
 ### 已知问题 / 未完成项
 
-- **模型未接通**：当前未配置真实模型（服务地址/模型名/凭证需向导师确认）。接入真实模型后需补充「模型触发工具」的端到端验证。
-- 前端 CopilotKit 接入（`memo-frontend` 仓库）尚未完成，属后续工作。
+- **容器未实测**：`Dockerfile` / `docker-compose.yml` 已写好，但开发机未安装 Docker，未做容器内复现
+- **会话不持久化**：历史在内存中，服务重启后清空
+- **评测判定非语义**：`tests/agent/` 的检查依赖关键词匹配，遇到表达变体可能误判
+
+## Agent 评测与优化（第四天）
+
+- **评测用例**：`tests/agent/`，12 个用例（正常 / 需要工具 / 不需要工具 / 模糊 / 超范围 / 异常 / 安全 / 工具层），运行方式见 `tests/agent/README.md`
+- **优化记录**：`docs/day-4-agent-optimization.md`（基线、问题分析、改动、前后对比、限制、复现步骤、复盘）
+- **本轮改动**：
+  - `app/agent/memo_agent.py`：新增 3 条交互规则（含糊请求先追问、写操作直接说明只读、工具报错不重复调用）
+  - `app/agent/tools.py`：关键词非空 + 长度校验、数据库异常统一兜底（错误码 `DB_UNAVAILABLE`，不泄露堆栈）、输出条数与长度上限
+- **结果**：同一套 12 个用例，通过 **10/12 → 12/12**，工具调用正确 **4/5 → 5/5**；登录保护、用户隔离、只读工具权限未削弱
+- **复现**：
+  ```bash
+  ./venv/Scripts/python.exe -m uvicorn app.main:app --port 8000   # C10 安全用例需要
+  ./venv/Scripts/python.exe -m tests.agent.evaluate --label after
+  ```
 
 ## 前端联调
 

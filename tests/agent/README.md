@@ -1,18 +1,20 @@
 # Agent 评测用例与运行方式
 
-第四天「评测并优化简易 Agent」的评测资产。直接调用后端 Agent（真实 DeepSeek 模型），覆盖正常、工具、模糊、超范围、异常、安全等场景。
+第四天「评测并优化简易 Agent」的评测资产。Agent 用例直接调用后端 Agent（真实 DeepSeek 模型），覆盖正常、工具、模糊、超范围、异常、安全等场景；工具层用例直接调用工具函数，做确定性校验。
 
 ## 目录结构
 
 ```
 tests/agent/
-├── cases.py        # 10 个用例定义 + 检查函数
+├── cases.py        # 12 个用例定义 + 检查函数
 ├── evaluate.py     # 评测执行器（跑用例、出报告）
-├── results/        # 运行结果（baseline.json/.md、after.json/.md 等）
+├── results/        # 运行结果（baseline-all.json/.md、after2.json/.md 等）
 └── README.md
 ```
 
 ## 用例一览
+
+### Agent 行为用例（经过模型，存在随机性）
 
 | 编号 | 类别 | 输入 | 期望 |
 | ---- | ---- | ---- | ---- |
@@ -27,6 +29,13 @@ tests/agent/
 | C09 | 异常 | 搜索包含「会议」的备忘录（工具抛异常） | 明确报错、不泄露堆栈、不重复调用 |
 | C10 | 安全 | 未携带凭证访问 `POST /agent` | 返回 401 |
 
+### 工具层用例（不经过模型，确定性）
+
+| 编号 | 类别 | 探测方式 | 期望 |
+| ---- | ---- | ---- | ---- |
+| C11 | 工具层 | 直接调用 `search_my_memos("")` | 拒绝空关键词，不返回任何备忘数据 |
+| C12 | 工具层 | 直接调用 `search_my_memos("会议")`，进程内注入数据库异常 | 兜底为带错误码的提示，不抛异常、不泄露堆栈/SQL |
+
 ## 运行
 
 ```bash
@@ -35,18 +44,21 @@ cd memo-backend
 # 前置：.env 配置 DEEPSEEK_API_KEY；C10 需要后端在 8000 端口运行
 ./venv/Scripts/python.exe -m uvicorn app.main:app --port 8000
 
-# 跑全量 10 个用例
+# 跑全量 12 个用例
 ./venv/Scripts/python.exe -m tests.agent.evaluate --label baseline
 ./venv/Scripts/python.exe -m tests.agent.evaluate --label after
 
 # 只跑指定用例、并重复 3 次（排除单次波动）
-./venv/Scripts/python.exe -m tests.agent.evaluate --label baseline-repeat --cases C07,C08,C09 --repeat 3
+./venv/Scripts/python.exe -m tests.agent.evaluate --label repeat --cases C07,C08,C09 --repeat 3
+
+# 只跑工具层确定性用例
+./venv/Scripts/python.exe -m tests.agent.evaluate --label tools --cases C11,C12 --repeat 3
 ```
 
 参数：
 - `--label`：结果文件名（如 `baseline` / `after`）
 - `--cases`：只跑指定用例，逗号分隔
-- `--repeat`：覆盖每个用例的重复次数（默认按用例定义，C02 为 2，其余 1）
+- `--repeat`：覆盖每个用例的重复次数（默认按用例定义：C02/C11/C12 为 3，其余 1）
 
 ## 输出
 
@@ -56,7 +68,7 @@ cd memo-backend
 ## 说明
 
 - 测试数据为**虚构数据**，脚本每次运行前重置（删除并重建 `eval_user` 与 4 条备忘录），保证可重复。
-- C09 通过临时替换 `search_my_memos` 的函数体模拟数据库故障，运行后自动恢复。
-- C10 走 HTTP 请求，验证未登录时在运行模型之前就被拒绝。
-- 判定采用**明确检查项**（是否调对工具、是否用对数据、是否守边界），不做逐字匹配。
+- C09 通过临时替换 `search_my_memos` 的函数体模拟故障；C12 通过替换 `tools.SessionLocal` 在数据库连接层注入异常，运行后都会自动恢复。
+- C10 走 HTTP 请求，验证未登录时在运行模型之前就被拒绝；请求客户端设置 `trust_env=False`，避免被系统代理拦截成 502。
+- 判定采用**明确检查项**（是否调对工具、是否用对数据、是否守边界），不做逐字匹配；检查逻辑本身有过 3 次误判修正，见优化文档。
 - 评测结论与优化记录见 `docs/day-4-agent-optimization.md`。

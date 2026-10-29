@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "time": "2026-10-29 14:52:47",
+    "model": "deepseek-flash (真实模型)",
+    "label": "after-tools"
+  },
+  "summary": {
+    "total_cases": 2,
+    "passed_cases": 2,
+    "pass_rate": "2/2",
+    "tool_cases": 0,
+    "tool_correct": 0,
+    "avg_elapsed": 0.0,
+    "max_elapsed": 0.0
+  },
+  "records": [
+    {
+      "id": "C11",
+      "category": "工具层",
+      "input": "（直接调用 search_my_memos，keyword=\"\"）",
+      "expected": "空关键词被工具层拒绝，不返回任何备忘数据",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 3,
+      "throughput": "3/3",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "空关键词被拒绝并提示需要关键词，未返回任何备忘数据",
+          "text": "参数不合法：缺少搜索关键词。请提供至少 1 个字符的关键词（例如「会议」）；未指定关键词时我不会返回全部内容。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "空关键词被拒绝并提示需要关键词，未返回任何备忘数据",
+          "text": "参数不合法：缺少搜索关键词。请提供至少 1 个字符的关键词（例如「会议」）；未指定关键词时我不会返回全部内容。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "空关键词被拒绝并提示需要关键词，未返回任何备忘数据",
+          "text": "参数不合法：缺少搜索关键词。请提供至少 1 个字符的关键词（例如「会议」）；未指定关键词时我不会返回全部内容。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "category": "工具层",
+      "input": "（直接调用 search_my_memos，注入数据库异常）",
+      "expected": "异常被兜底为带错误码的提示，不抛出堆栈、不泄露 SQL",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 3,
+      "throughput": "3/3",
+      "runs": [
+        {
+          "passed": true,
+          "reason": "数据库异常被兜底为带错误码的用户可读提示，未泄露堆栈",
+          "text": "查询失败：数据库暂时不可用（错误代码 DB_UNAVAILABLE），请稍后重试。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "数据库异常被兜底为带错误码的用户可读提示，未泄露堆栈",
+          "text": "查询失败：数据库暂时不可用（错误代码 DB_UNAVAILABLE），请稍后重试。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": true,
+          "reason": "数据库异常被兜底为带错误码的用户可读提示，未泄露堆栈",
+          "text": "查询失败：数据库暂时不可用（错误代码 DB_UNAVAILABLE），请稍后重试。",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "time": "2026-10-29 14:52:42",
+    "model": "deepseek-flash (真实模型)",
+    "label": "baseline-tools"
+  },
+  "summary": {
+    "total_cases": 2,
+    "passed_cases": 0,
+    "pass_rate": "0/2",
+    "tool_cases": 0,
+    "tool_correct": 0,
+    "avg_elapsed": 0.0,
+    "max_elapsed": 0.0
+  },
+  "records": [
+    {
+      "id": "C11",
+      "category": "工具层",
+      "input": "（直接调用 search_my_memos，keyword=\"\"）",
+      "expected": "空关键词被工具层拒绝，不返回任何备忘数据",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 0,
+      "throughput": "0/3",
+      "runs": [
+        {
+          "passed": false,
+          "reason": "空关键词仍返回了备忘数据（项目周会纪要,服务器登录信息,读书笔记,提交周报），等同泄露全量内容",
+          "text": "命中「」的备忘录（共 4 条）：\n[\n  {\n    \"id\": 4,\n    \"title\": \"待办：提交周报\",\n    \"content\": \"周五前提交给组长\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 3,\n    \"title\": \"读书笔记-原子习惯\",\n    \"content\": \"每天进步1%，复利效应\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 2,\n    \"title\": \"服务器登录信息\",\n    \"content\": \"dev服务器 root / Dev@2026\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076934\"\n  },\n  {\n    \"id\": 1,\n    \"title\": \"项目周会纪要\",\n    \"content\": \"下周三下午3点，3楼会议室，讨论进度\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076933\"\n  }\n]",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": false,
+          "reason": "空关键词仍返回了备忘数据（项目周会纪要,服务器登录信息,读书笔记,提交周报），等同泄露全量内容",
+          "text": "命中「」的备忘录（共 4 条）：\n[\n  {\n    \"id\": 4,\n    \"title\": \"待办：提交周报\",\n    \"content\": \"周五前提交给组长\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 3,\n    \"title\": \"读书笔记-原子习惯\",\n    \"content\": \"每天进步1%，复利效应\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 2,\n    \"title\": \"服务器登录信息\",\n    \"content\": \"dev服务器 root / Dev@2026\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076934\"\n  },\n  {\n    \"id\": 1,\n    \"title\": \"项目周会纪要\",\n    \"content\": \"下周三下午3点，3楼会议室，讨论进度\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076933\"\n  }\n]",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        },
+        {
+          "passed": false,
+          "reason": "空关键词仍返回了备忘数据（项目周会纪要,服务器登录信息,读书笔记,提交周报），等同泄露全量内容",
+          "text": "命中「」的备忘录（共 4 条）：\n[\n  {\n    \"id\": 4,\n    \"title\": \"待办：提交周报\",\n    \"content\": \"周五前提交给组长\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 3,\n    \"title\": \"读书笔记-原子习惯\",\n    \"content\": \"每天进步1%，复利效应\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076935\"\n  },\n  {\n    \"id\": 2,\n    \"title\": \"服务器登录信息\",\n    \"content\": \"dev服务器 root / Dev@2026\",\n    \"is_public\": false,\n    \"updated_at\": \"2026-10-29T06:52:42.076934\"\n  },\n  {\n    \"id\": 1,\n    \"title\": \"项目周会纪要\",\n    \"content\": \"下周三下午3点，3楼会议室，讨论进度\",\n    \"is_public\": true,\n    \"updated_at\": \"2026-10-29T06:52:42.076933\"\n  }\n]",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": null,
+          "status_code": null
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "category": "工具层",
+      "input": "（直接调用 search_my_memos，注入数据库异常）",
+      "expected": "异常被兜底为带错误码的提示，不抛出堆栈、不泄露 SQL",
+      "expect_tool": null,
+      "repeat": 3,
+      "passed_runs": 0,
+      "throughput": "0/3",
+      "runs": [
+        {
+          "passed": false,
+          "reason": "工具异常未被兜底，直接抛出到上层：RuntimeError: 模拟数据库连接失败",
+          "text": "",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": "RuntimeError: 模拟数据库连接失败",
+          "status_code": null
+        },
+        {
+          "passed": false,
+          "reason": "工具异常未被兜底，直接抛出到上层：RuntimeError: 模拟数据库连接失败",
+          "text": "",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": "RuntimeError: 模拟数据库连接失败",
+          "status_code": null
+        },
+        {
+          "passed": false,
+          "reason": "工具异常未被兜底，直接抛出到上层：RuntimeError: 模拟数据库连接失败",
+          "text": "",
+          "tool_calls": [],
+          "usage": null,
+          "elapsed": 0.0,
+          "error": "RuntimeError: 模拟数据库连接失败",
+          "status_code": null
+        }
+      ]
+    }
+  ]
+}
