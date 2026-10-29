@@ -37,6 +37,22 @@ uvicorn app.main:app --reload --port 8000
 
 服务默认运行在 `http://127.0.0.1:8000`，交互式 API 文档：`http://127.0.0.1:8000/docs`。
 
+## 容器启动（Docker）
+
+```bash
+# 1. 创建共享网络（与前端仓库共用，只需一次）
+docker network create memo-network
+
+# 2. 在本仓库目录启动
+docker compose up -d --build
+```
+
+- 服务运行在 `http://localhost:8000`
+- SQLite 数据持久化在 volume `memo-data`
+- 模型密钥通过宿主机 `.env` 或环境变量注入（`DEEPSEEK_API_KEY`），不写入镜像
+
+> ⚠️ 本机当前未安装 Docker，容器配置**尚未实际验证**，安装 Docker 后按上述步骤即可复现。
+
 ## 接口一览
 
 | 方法 | 路径 | 说明 | 是否需要登录 |
