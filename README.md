@@ -7,12 +7,14 @@
 - 用户注册 / 登录（账号密码 + JWT 鉴权）
 - 备忘录增删改查（CRUD）
 - 可见性控制：**公开备忘**无需登录即可查看，**私有备忘**仅作者本人登录后可见
+- **备忘 Agent**（第三天新增）：登录后可对话，Agent 通过只读工具查询你自己的备忘录
 
 ## 技术栈
 
 - Python 3.10+ / FastAPI / SQLAlchemy 2.0
 - SQLite（零配置，单文件）
 - PyJWT（HS256 令牌）
+- Microsoft Agent Framework + AG-UI（备忘 Agent）
 
 ## 快速开始
 
@@ -34,6 +36,22 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 服务默认运行在 `http://127.0.0.1:8000`，交互式 API 文档：`http://127.0.0.1:8000/docs`。
+
+## 容器启动（Docker）
+
+```bash
+# 1. 创建共享网络（与前端仓库共用，只需一次）
+docker network create memo-network
+
+# 2. 在本仓库目录启动
+docker compose up -d --build
+```
+
+- 服务运行在 `http://localhost:8000`
+- SQLite 数据持久化在 volume `memo-data`
+- 模型密钥通过宿主机 `.env` 或环境变量注入（`DEEPSEEK_API_KEY`），不写入镜像
+
+> ⚠️ 本机当前未安装 Docker，容器配置**尚未实际验证**，安装 Docker 后按上述步骤即可复现。
 
 ## 接口一览
 
@@ -57,6 +75,40 @@ uvicorn app.main:app --reload --port 8000
 - `SECRET_KEY`：JWT 签名密钥（生产必须更换）
 - `ACCESS_TOKEN_EXPIRE_MINUTES`：令牌有效期，默认 60 分钟
 - `DATABASE_URL`：数据库地址，默认 `sqlite:///./memo.db`
+- Agent 模型配置（多选一，密钥只保留在服务端，绝不进代码/前端）：
+  - `DEEPSEEK_API_KEY` + `DEEPSEEK_MODEL`（默认 `deepseek-flash`）：DeepSeek（OpenAI 兼容，推荐）
+  - `OLLAMA_MODEL`：本地 Ollama（免费，需本地运行 ollama）
+  - `OPENAI_API_KEY` + `OPENAI_CHAT_MODEL`：OpenAI
+  - `AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_MODEL`：Azure OpenAI
+
+> 都未配置时会回退到本地 Ollama（`llama3.2` @ `localhost:11434`），并打印警告。
+
+## 备忘 Agent（第三天）
+
+基于 **Microsoft Agent Framework** 定义 Agent，通过官方 **AG-UI** 集成在 FastAPI 暴露接口。
+
+- **端点**：`POST /agent`（前端经 Vite 代理 `/api/agent` 访问）
+- **登录保护**：请求必须携带 `Authorization: Bearer <token>`；未登录 / 无效 token 在运行模型前即返回 `401`
+- **只读工具**（后端真实执行）：
+  - `list_my_memos`：列出当前用户全部备忘
+  - `search_my_memos`：按关键词搜索当前用户备忘
+  - `memo_stats`：统计数量（总数 / 公开 / 私有）
+- **安全边界**：
+  - 工具只读取**后端从 JWT 解析出的已验证 user_id**（通过 ContextVar 注入），工具签名不暴露 user_id，模型与浏览器都无法指定用户
+  - 仅只读，无新增 / 修改 / 删除工具
+  - 会话状态按用户隔离（`authorization_scope_resolver` 返回 `user:<id>` 作为 scope）
+
+### 实际安装版本
+
+- `agent-framework==1.23.0`
+- `agent-framework-ag-ui==1.7.0`
+- `agent-framework-openai==1.17.0`
+- `agent-framework-ollama==1.0.0b261022`（预发布，随 `agent-framework-core[all]` 自动带入）
+
+### 已知问题 / 未完成项
+
+- **模型未接通**：当前未配置真实模型（服务地址/模型名/凭证需向导师确认）。接入真实模型后需补充「模型触发工具」的端到端验证。
+- 前端 CopilotKit 接入（`memo-frontend` 仓库）尚未完成，属后续工作。
 
 ## 前端联调
 
