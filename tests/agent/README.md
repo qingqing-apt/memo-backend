@@ -79,6 +79,9 @@ cd memo-backend
 
 # 只跑某几条
 ./venv/Scripts/python.exe -m tests.agent.robustness --label extra --only R05,R06
+
+# 演示前清理这 5 个测试账号（避免公开备忘出现在游客列表）
+./venv/Scripts/python.exe -m tests.agent.robustness --cleanup
 ```
 
 结果写入 `results/robustness-<label>.json` / `.md`。数据准备会创建 `rb_multi` / `rb_empty` / `rb_other` / `rb_long` / `rb_inject` 五个专用账号，每个账号的数据每次运行前重置，互不干扰，也不会影响其它账号。

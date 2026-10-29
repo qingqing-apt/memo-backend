@@ -76,6 +76,26 @@ def _ensure_user(db, username: str) -> models.User:
     return user
 
 
+FIXTURE_USERNAMES = ("rb_multi", "rb_empty", "rb_other", "rb_long", "rb_inject")
+
+
+def cleanup_fixtures() -> None:
+    """删除补充用例创建的全部账号及其备忘（演示前清理用）。"""
+    db = SessionLocal()
+    try:
+        n_memo = 0
+        for name in FIXTURE_USERNAMES:
+            user = db.query(models.User).filter(models.User.username == name).first()
+            if user is None:
+                continue
+            n_memo += db.query(models.Memo).filter(models.Memo.owner_id == user.id).delete()
+            db.delete(user)
+        db.commit()
+        print(f"已清理补充用例账号（{', '.join(FIXTURE_USERNAMES)}），共 {n_memo} 条备忘")
+    finally:
+        db.close()
+
+
 def prepare_fixtures() -> dict[str, int]:
     """建立互不干扰的测试账号，返回 username -> id。"""
     db = SessionLocal()
@@ -346,7 +366,12 @@ async def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--label", default="extra")
     parser.add_argument("--only", default="")
+    parser.add_argument("--cleanup", action="store_true", help="只清理测试账号，不跑用例")
     args = parser.parse_args()
+
+    if args.cleanup:
+        cleanup_fixtures()
+        return
 
     ids = prepare_fixtures()
     cases = build_cases(ids)
